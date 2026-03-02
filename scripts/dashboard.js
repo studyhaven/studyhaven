@@ -1454,7 +1454,7 @@ function swStart() {
   swRafId = requestAnimationFrame(swRender);
 }
 
-function swPause() {
+async function swPause(silent = false) {
   swElapsed += Date.now() - swStartedAt;
   swRunning = false;
   if (swRafId) { cancelAnimationFrame(swRafId); swRafId = null; }
@@ -1462,10 +1462,29 @@ function swPause() {
   $("sw-pause-icon").style.display = "none";
   swUpdateStatus(swElapsed > 0 ? "paused" : "");
   swRender();
+
+  // Auto-save a checkpoint record on pause (skip if called from stop/reset)
+  if (!silent && swElapsed > 0) {
+    const label = ($("sw-label").value || "").trim() || "Untimed session";
+    const { timeStr, cents } = swFormat(swElapsed);
+    const displayTime = timeStr + "." + cents;
+    try {
+      await addDoc(swHistoryRef(), {
+        label,
+        durationMs: swElapsed,
+        displayTime,
+        savedAt: Date.now(),
+      });
+      showToast("Checkpoint saved! ✓", "success");
+      loadSwHistory();
+    } catch(e) {
+      console.error("Stopwatch checkpoint save error:", e);
+    }
+  }
 }
 
 async function swReset() {
-  if (swRunning) swPause();
+  if (swRunning) await swPause(true);
   swElapsed = 0;
   swRender();
   swUpdateStatus("");
@@ -1473,7 +1492,16 @@ async function swReset() {
 }
 
 async function swStop() {
-  if (swRunning) swPause();
+  // If already paused, a checkpoint was already saved — just reset without saving again
+  if (!swRunning) {
+    swElapsed = 0;
+    swRender();
+    swUpdateStatus("");
+    $("sw-label").value = "";
+    return;
+  }
+  // Running → pause silently, then save final session
+  await swPause(true);
   if (swElapsed === 0) { showToast("Nothing to save — run the stopwatch first.", "error"); return; }
   const label = ($("sw-label").value || "").trim() || "Untimed session";
   const { timeStr, cents } = swFormat(swElapsed);
