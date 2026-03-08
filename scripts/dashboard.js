@@ -38,7 +38,7 @@ async function initMessagingIfSupported() {
     messaging = getMessaging(app);
     return messaging;
   } catch (error) {
-    console.warn("StudyHaven: Messaging unavailable in this environment:", error?.message || error);
+    console.warn("Motixopire: Messaging unavailable in this environment:", error?.message || error);
     messaging = null;
     return null;
   }
@@ -53,9 +53,9 @@ async function bindForegroundMessagingListener() {
     const n = payload.notification || {};
     const d = payload.data || {};
     showAlarmNotification({
-      title:        n.body  || d.body  || "StudyHaven Reminder",
+      title:        n.body  || d.body  || "Motixopire Reminder",
       subtitle:     d.subtitle || "",
-      emailSubject: d.emailSubject || "StudyHaven Reminder",
+      emailSubject: d.emailSubject || "Motixopire Reminder",
       emailBody:    d.emailBody   || n.body || "",
     });
   });
@@ -92,11 +92,11 @@ function showAlarmNotification({ title, subtitle, emailSubject, emailBody }) {
 
   if (Notification.permission === "default") Notification.requestPermission();
   if (Notification.permission === "granted") {
-    const n = new Notification("⏰ StudyHaven Reminder", { body: title });
+    const n = new Notification("⏰ Motixopire Reminder", { body: title });
     setTimeout(() => n.close(), 8000);
   }
 
-  const mailtoLink = `mailto:?subject=${encodeURIComponent(emailSubject || "StudyHaven Reminder")}&body=${encodeURIComponent(emailBody || title)}`;
+  const mailtoLink = `mailto:?subject=${encodeURIComponent(emailSubject || "Motixopire Reminder")}&body=${encodeURIComponent(emailBody || title)}`;
   const el = document.createElement("div");
   el.className = "alarm-notif";
   el.id = id;
@@ -162,7 +162,7 @@ async function registerFCMToken() {
   const m = await initMessagingIfSupported();
   if (!m) return;
   if (FCM_VAPID_KEY === "YOUR_VAPID_KEY_HERE") {
-    console.warn("StudyHaven: Replace FCM_VAPID_KEY with your real VAPID key to enable push notifications.");
+    console.warn("Motixopire: Replace FCM_VAPID_KEY with your real VAPID key to enable push notifications.");
     return;
   }
 
@@ -212,7 +212,7 @@ async function _doRegisterToken(btn, silent, activeMessaging) {
       vapidKey: FCM_VAPID_KEY,
       serviceWorkerRegistration: swReg,
     });
-    if (!token) { console.warn("StudyHaven: getToken returned empty"); return false; }
+    if (!token) { console.warn("Motixopire: getToken returned empty"); return false; }
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Manila";
 
@@ -239,7 +239,7 @@ async function _doRegisterToken(btn, silent, activeMessaging) {
       btn.innerHTML = `${bellIcon}<span class="notif-text">Notifications On</span>`;
       setTimeout(() => { btn.style.display = "none"; }, 3000);
     }
-    console.info(`StudyHaven: FCM token registered. Timezone: ${timezone}`);
+    console.info(`Motixopire: FCM token registered. Timezone: ${timezone}`);
     if (!silent) showToast("Push notifications enabled! ✓", "success");
     return true;
 
@@ -259,7 +259,7 @@ async function _doRegisterToken(btn, silent, activeMessaging) {
       btn.title = userMsg;
       btn.onclick = () => _doRegisterToken(btn, false, activeMessaging);
     }
-    console.warn("StudyHaven: FCM registration failed:", err.message);
+    console.warn("Motixopire: FCM registration failed:", err.message);
     if (!silent) showToast(userMsg, "error");
     return false;
   }
@@ -493,8 +493,8 @@ function updateTTSButton() {
       all:unset; cursor:pointer; display:flex; align-items:center; gap:.3rem;
       font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:500;
       color:white !important; padding:.35rem .75rem;
-      border:1px solid var(--sage) !important; border-radius:var(--radius-pill);
-      background:var(--sage) !important; transition:all .2s ease; white-space:nowrap; flex-shrink:0;
+      border:1px solid var(--primary) !important; border-radius:var(--radius-pill);
+      background:var(--primary) !important; transition:all .2s ease; white-space:nowrap; flex-shrink:0;
     `;
   } else {
     btn.title = "Text-to-speech OFF — click to turn on";
@@ -1053,7 +1053,7 @@ function renderTasks() {
         <div class="task-meta">
           <span class="priority-dot ${t.priority||"medium"}"></span><span>${PL[t.priority]||""}</span>
           <span>📅 ${dl}</span>
-          ${t.alarmTime ? `<span style="color:${t.alarmEnabled?"var(--sage)":"#ccc"}">🔔 ${t.alarmTime}</span>` : ""}
+          ${t.alarmTime ? `<span style="color:${t.alarmEnabled?"var(--primary)":"#ccc"}">🔔 ${t.alarmTime}</span>` : ""}
           ${t.completed ? `<span style="color:#22c55e;font-size:.72rem">✓ Done</span>` : ""}
         </div>
       </div>
@@ -1283,7 +1283,7 @@ async function loadAndDisplayTimerHistory() {
       const date = new Date(data.completedAt).toLocaleDateString([], { month: "short", day: "numeric" });
       const time = new Date(data.completedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
       html += `
-        <div style="padding:.4rem .5rem; border-radius:.5rem; background:rgba(147,51,234,0.05); margin-bottom:.3rem; display:flex; justify-content:space-between; align-items:center; font-size:.8rem;">
+        <div style="padding:.4rem .5rem; border-radius:.5rem; background:rgba(26,60,110,0.05); margin-bottom:.3rem; display:flex; justify-content:space-between; align-items:center; font-size:.8rem;">
           <span>#${snap.size - idx}: ${data.formattedTime}</span>
           <span style="color:var(--muted);">${date} ${time}</span>
         </div>
@@ -1409,7 +1409,7 @@ function startTimer() {
         showAlarmNotification({
           title: "⏰ Timer complete! Starting next cycle.",
           subtitle: "Your study session has ended. Next cycle beginning shortly.",
-          emailSubject: "StudyHaven: Timer Complete",
+          emailSubject: "Motixopire: Timer Complete",
           emailBody: "Your study timer just finished! Next repeat cycle starting. 🌿"
         });
         // Save completion in background (don't wait for it)
@@ -1424,7 +1424,7 @@ function startTimer() {
         showAlarmNotification({
           title: "⏰ Timer complete! Time for a break.",
           subtitle: "Your study session has ended.",
-          emailSubject: "StudyHaven: Timer Complete",
+          emailSubject: "Motixopire: Timer Complete",
           emailBody: "Your study timer just finished! Time to take a well-deserved break. 🌿"
         });
         // Save completion in background (don't wait for it)
@@ -1476,7 +1476,7 @@ setInterval(() => {
       showAlarmNotification({
         title: `Reminder: ${t.title}`,
         subtitle: `${t.completed ? "✓ Completed task" : `Due: ${t.deadline}`} · ${t.priority} priority`,
-        emailSubject: `StudyHaven Reminder: ${t.title}`,
+        emailSubject: `Motixopire Reminder: ${t.title}`,
         emailBody: `Reminder for your task: "${t.title}"\nDue: ${t.deadline}\nPriority: ${t.priority}\nStatus: ${t.completed ? "Completed" : "Pending"}`
       });
     }
@@ -1526,7 +1526,7 @@ function swStart() {
   swRafId = requestAnimationFrame(swRender);
 }
 
-async function swPause(silent = false) {
+function swPause() {
   swElapsed += Date.now() - swStartedAt;
   swRunning = false;
   if (swRafId) { cancelAnimationFrame(swRafId); swRafId = null; }
@@ -1534,29 +1534,10 @@ async function swPause(silent = false) {
   $("sw-pause-icon").style.display = "none";
   swUpdateStatus(swElapsed > 0 ? "paused" : "");
   swRender();
-
-  // Auto-save a checkpoint record on pause (skip if called from stop/reset)
-  if (!silent && swElapsed > 0) {
-    const label = ($("sw-label").value || "").trim() || "Untimed session";
-    const { timeStr, cents } = swFormat(swElapsed);
-    const displayTime = timeStr + "." + cents;
-    try {
-      await addDoc(swHistoryRef(), {
-        label,
-        durationMs: swElapsed,
-        displayTime,
-        savedAt: Date.now(),
-      });
-      showToast("Checkpoint saved! ✓", "success");
-      loadSwHistory();
-    } catch(e) {
-      console.error("Stopwatch checkpoint save error:", e);
-    }
-  }
 }
 
-async function swReset() {
-  if (swRunning) await swPause(true);
+function swReset() {
+  if (swRunning) swPause();
   swElapsed = 0;
   swRender();
   swUpdateStatus("");
@@ -1564,21 +1545,13 @@ async function swReset() {
 }
 
 async function swStop() {
-  // If already paused, a checkpoint was already saved — just reset without saving again
-  if (!swRunning) {
-    swElapsed = 0;
-    swRender();
-    swUpdateStatus("");
-    $("sw-label").value = "";
-    return;
-  }
-  // Running → pause silently, then save final session
-  await swPause(true);
+  if (swRunning) swPause();
   if (swElapsed === 0) { showToast("Nothing to save — run the stopwatch first.", "error"); return; }
   const label = ($("sw-label").value || "").trim() || "Untimed session";
   const { timeStr, cents } = swFormat(swElapsed);
   const displayTime = timeStr + "." + cents;
   const savedMs = swElapsed;
+  const savedAt = Date.now();
   swElapsed = 0;
   swRender();
   swUpdateStatus("");
@@ -1588,7 +1561,7 @@ async function swStop() {
       label,
       durationMs: savedMs,
       displayTime,
-      savedAt: Date.now(),
+      savedAt,
     });
     showToast("Session saved! ✓", "success");
     loadSwHistory();
@@ -1861,7 +1834,7 @@ function renderChart() {
     type: "doughnut",
     data: {
       labels,
-      datasets: [{ data: normVals, backgroundColor: colors, borderWidth: 3, borderColor: "#faf8f4", hoverOffset: 8 }]
+      datasets: [{ data: normVals, backgroundColor: colors, borderWidth: 3, borderColor: "#FFFFFF", hoverOffset: 8 }]
     },
     options: {
       cutout: "68%",

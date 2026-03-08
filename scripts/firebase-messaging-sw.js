@@ -20,14 +20,14 @@ const messaging = firebase.messaging();
 // Fires when the app is NOT in the foreground (tab closed / minimised)
 messaging.onBackgroundMessage(payload => {
   const { title, body, icon, url } = payload.notification || payload.data || {};
-  self.registration.showNotification(title || "StudyHaven", {
+  self.registration.showNotification(title || "Motixopire", {
     body:    body  || "You have a new reminder.",
     icon:    icon  || "/icons/icon-192.png",
     badge:   "/icons/badge-72.png",
     data:    { url: url || "/" },
     vibrate: [200, 100, 200],
     actions: [
-      { action: "open",    title: "Open StudyHaven" },
+      { action: "open",    title: "Open Motixopire" },
       { action: "dismiss", title: "Dismiss" },
     ],
   });
@@ -46,3 +46,4 @@ self.addEventListener("notificationclick", event => {
     })
   );
 });
+
